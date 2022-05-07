@@ -1,11 +1,12 @@
 import { Text, View, StyleSheet, Image, Button } from "react-native";
 import LoginButton from "../components/LoginButton";
+import globalStyle from "../styles/GlobalStyles";
 
 export default function LoginScreen() {
   const handleFacebook = () => {};
   const handleGoogle = () => {};
   return (
-    <View style={style.mainContainer}>
+    <View style={(style.mainContainer)}>
       <Image source={require("../assets/logo.png")} style={style.logo_img} />
       <Text style={style.title}>Helper</Text>
       <View style={style.btnContainer}>
