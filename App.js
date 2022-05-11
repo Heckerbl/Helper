@@ -3,7 +3,8 @@ import HomeScreen from "./app/screens/HomeScreen";
 import LoginScreen from "./app/screens/LoginScreen";
 import SearchScreen from "./app/screens/SearchScreen";
 import ProfileScreen from "./app/screens/ProfileScreen";
-import ChatScreen from "./app/screens/ChatScreen"; 
+import ProfileEditScreen from "./app/screens/ProfileEditScreen";
+import ChatScreen from "./app/screens/ChatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -31,6 +32,11 @@ export default function App() {
         <stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
+          options={{ headerShown: false, animation: "none" }}
+        ></stack.Screen>
+        <stack.Screen
+          name="ProfileEditScreen"
+          component={ProfileEditScreen}
           options={{ headerShown: false, animation: "none" }}
         ></stack.Screen>
         <stack.Screen

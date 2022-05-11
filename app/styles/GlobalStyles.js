@@ -27,6 +27,9 @@ const globalStyle = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
   },
+  lightText: {
+    color: "#424242",
+  },
 });
 export default globalStyle;
 

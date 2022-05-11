@@ -2,9 +2,9 @@ import {
   View,
   Text,
   StyleSheet,
-  Touchable,
   ScrollView,
   Image,
+  Pressable,
 } from "react-native";
 import React from "react";
 import globalStyle from "../styles/GlobalStyles";
@@ -14,7 +14,8 @@ import Quote from "../assets/Quote.svg";
 import MessengerIco from "../assets/mess.svg";
 import AddFrn from "../assets/addFrn.svg";
 import Plan from "../components/Plan.js";
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
+import EditIcon from "../assets/edit.svg";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ProfileScreen({ route }) {
   const user = {
@@ -26,6 +27,10 @@ export default function ProfileScreen({ route }) {
 
   const active = 1;
 
+  const usr = "Linus tech tips";
+  const mineProfile = () => {
+    return usr === user.name;
+  };
   // title, price, offer, time, response, tags;
   // just a reference data not the actual data
   const plans = [
@@ -58,6 +63,19 @@ export default function ProfileScreen({ route }) {
     },
   ];
 
+  const navigator = useNavigation();
+
+  // funciton to open the edit page
+  const editProfile = () => {
+    navigator.navigate("ProfileEditScreen");
+  };
+
+  // for opeingin the messenger page
+  const message = () => {};
+
+  // for adding as a friend
+  const addfrn = () => {};
+
   return (
     <View style={[globalStyle.makeSafe, style.main_container]}>
       <Header title={"Profile > " + user.name} ham={false} />
@@ -76,18 +94,37 @@ export default function ProfileScreen({ route }) {
             </View>
           </View>
           <View style={[globalStyle.flexCenter, style.btn_con]}>
-            <Pressable style={[globalStyle.button_with_icon, style.message]}>
-              <Text>Message</Text>
-              <MessengerIco />
-            </Pressable>
-            <Pressable style={[globalStyle.smallIconBox, style.AddFrn]}>
-              <AddFrn />
-            </Pressable>
+            {mineProfile() ? (
+              <Pressable
+                style={[globalStyle.button_with_icon, style.edit]}
+                onPress={editProfile}
+              >
+                <Text style={globalStyle.lightText}>Edit profile</Text>
+                <EditIcon />
+              </Pressable>
+            ) : (
+              <>
+                <Pressable
+                  style={[globalStyle.button_with_icon, style.message]}
+                  onPress={message}
+                >
+                  <Text style={globalStyle.lightText}>Message</Text>
+                  <MessengerIco />
+                </Pressable>
+                <Pressable
+                  style={[globalStyle.smallIconBox, style.AddFrn]}
+                  onPress={addfrn}
+                >
+                  <AddFrn />
+                </Pressable>
+              </>
+            )}
           </View>
-
-          {plans.map((plan, index) => {
-            return <Plan key={index} data={plan} />;
-          })}
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {plans.map((plan, index) => {
+              return <Plan key={index} data={plan} />;
+            })}
+          </ScrollView>
         </View>
       </ScrollView>
       <Nav active={route.name} />
@@ -99,7 +136,7 @@ const style = StyleSheet.create({
   quote: {
     marginTop: 14,
     flexDirection: "row",
-    maxWidth: 190,
+    maxWidth: 100,
     justifyContent: "flex-start",
   },
   quote_text: {
@@ -139,8 +176,13 @@ const style = StyleSheet.create({
   message: {
     minWidth: 120,
   },
+  edit: {
+    minWidth: 130,
+  },
   contents: {
     width: "90%",
     alignSelf: "center",
+    alignItems: "center",
+    paddingBottom: 200,
   },
 });
