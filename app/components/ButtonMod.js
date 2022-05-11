@@ -3,7 +3,17 @@ import React from "react";
 import globalStyle from "../styles/GlobalStyles";
 
 export default function ButtonMod(prop) {
-  const { name, color, height, width, borderRad, backgroundColor, _FN } = prop;
+  const {
+    name,
+    color,
+    height,
+    width,
+    borderRad,
+    backgroundColor,
+    marginTop,
+    marginLeft,
+    _FN,
+  } = prop;
   const style = StyleSheet.create({
     btnStyle: {
       marginTop: 10,
@@ -11,6 +21,8 @@ export default function ButtonMod(prop) {
       height: height,
       width: width,
       borderRadius: borderRad,
+      marginTop: marginTop ? marginTop : "auto",
+      marginLeft: marginLeft ? marginLeft : 0,
     },
     text: {
       color: color,
