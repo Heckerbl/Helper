@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import React from "react";
 import globalStyle from "../styles/GlobalStyles";
-import Nav from "../components/Nav";
-import Header from "../components/Header";
+import Nav from "../components/global/Nav";
+import Header from "../components/global/Header";
 import Quote from "../assets/Quote.svg";
 import MessengerIco from "../assets/mess.svg";
 import AddFrn from "../assets/addFrn.svg";
-import Plan from "../components/Plan.js";
+import Plan from "../components/profile/Plan.js";
 import EditIcon from "../assets/edit.svg";
 import { useNavigation } from "@react-navigation/native";
 
@@ -78,7 +78,11 @@ export default function ProfileScreen({ route }) {
 
   return (
     <View style={[globalStyle.makeSafe, style.main_container]}>
-      <Header title={"Profile > " + user.name} ham={false} />
+      <Header
+        title={"Profile > " + mineProfile() ? "Me" : user.name}
+        ham={false}
+        notification
+      />
       <ScrollView>
         <View style={style.contents}>
           {/* the container that contains the profile image name and the quote */}

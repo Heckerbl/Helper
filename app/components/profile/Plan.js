@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import globalStyle from "../styles/GlobalStyles";
-import ButtonMod from "./ButtonMod.js";
+import globalStyle from "../../styles/GlobalStyles";
+import ButtonMod from "../global/ButtonMod";
 
 export default function Plan({ data }) {
   const onPress = () => {

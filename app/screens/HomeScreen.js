@@ -1,10 +1,9 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React from "react";
-import Header from "../components/Header";
-import HelperCard from "../components/HelperCard";
-import Nav from "../components/Nav.js";
-import safeAreaView from "../styles/GlobalStyles.js";
-import SearchBox from "../components/SearchBox";
+import Header from "../components/global/Header";
+import HelperCard from "../components/global/HelperCard";
+import Nav from "../components/global/Nav.js";
+import SearchBox from "../components/homescreen/SearchBox";
 import globalStyle from "../styles/GlobalStyles.js";
 
 export default function HomeScreen({ navigation, route }) {
@@ -17,7 +16,13 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   return (
-    <View style={[ globalStyle.makeSafe ,globalStyle.flexCenter]}>
+    <View
+      style={[
+        globalStyle.makeSafe,
+        globalStyle.flexCenter,
+        style.main_container,
+      ]}
+    >
       <Header title={""} notification={true} ham={true} />
       {/* content in the middle of the page */}
       <ScrollView>
@@ -46,6 +51,7 @@ const style = StyleSheet.create({
     width: 350,
     marginTop: 20,
   },
-
-   
+  main_container: {
+    backgroundColor: "#fff",
+  },
 });

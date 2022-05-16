@@ -1,9 +1,9 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import React from "react";
-import Nav from "../components/Nav";
+import Nav from "../components/global/Nav";
 import globalStyle from "../styles/GlobalStyles";
-import Header from "../components/Header";
-import HelperCard from "../components/HelperCard";
+import Header from "../components/global/Header";
+import HelperCard from "../components/global/HelperCard";
 
 export default function SearchScreen({ route }) {
   // the text return in the search box.

@@ -11,7 +11,7 @@ const globalStyle = StyleSheet.create({
     justifyContent: "center",
   },
   smallIconBox: {
-    backgroundColor: "#e6e6e6",
+    backgroundColor: "#EFEFEF",
     height: 40,
     width: 40,
     borderRadius: 12,

@@ -5,9 +5,9 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from "react-native";
-import Star from "../assets/Star.svg";
-import Quote from "../assets/Quote.svg";
-import { getRandomColor } from "../styles/GlobalStyles.js";
+import Star from "../../assets/Star.svg";
+import Quote from "../../assets/Quote.svg";
+import { getRandomColor } from "../../styles/GlobalStyles.js";
 import { useNavigation } from "@react-navigation/native";
 export default function HelperCard({ user }) {
   const { image, name, job, stars, quote } = user;
@@ -50,9 +50,9 @@ const style = StyleSheet.create({
     marginTop: 5,
     justifyContent: "center",
     alignItems: "center",
-    borderBottomColor:"#e8e8e8",
-    borderBottomWidth:2,
-    borderRadius:17,
+    borderBottomColor: "#e8e8e8",
+    borderBottomWidth: 2,
+    borderRadius: 17,
   },
   title_container: {
     paddingHorizontal: 10,

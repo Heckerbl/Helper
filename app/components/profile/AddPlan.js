@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import InputBox from "./InputBox";
-import ButtonMod from "./ButtonMod";
+import InputBox from "../global/InputBox";
+import ButtonMod from "../global/ButtonMod";
 
 export default function AddPlan() {
   return (

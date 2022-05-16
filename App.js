@@ -4,10 +4,10 @@ import LoginScreen from "./app/screens/LoginScreen";
 import SearchScreen from "./app/screens/SearchScreen";
 import ProfileScreen from "./app/screens/ProfileScreen";
 import ProfileEditScreen from "./app/screens/ProfileEditScreen";
+import IndividualChatScreen from "./app/screens/IndividualChatScreen.js";
 import ChatScreen from "./app/screens/ChatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 export default function App() {
   const stack = createNativeStackNavigator();
 
@@ -43,6 +43,11 @@ export default function App() {
           name="ChatScreen"
           component={ChatScreen}
           options={{ headerShown: false, animation: "none" }}
+        ></stack.Screen>
+        <stack.Screen
+          name="IndividualChatScreen"
+          component={IndividualChatScreen}
+          options={{ headerShown: false, animation: "slide_from_right" }}
         ></stack.Screen>
       </stack.Navigator>
     </NavigationContainer>

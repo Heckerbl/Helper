@@ -1,6 +1,6 @@
 import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
-import Search from "../assets/search_btn.svg";
+import Search from "../../assets/search_btn.svg";
 export default function SearchBox() {
   return (
     <View style={style.container}>
@@ -27,7 +27,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#EFEFEF",
   },
   searchIcoCon: {
     height: "100%",

@@ -1,12 +1,13 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import React from "react";
 import globalStyle from "../styles/GlobalStyles";
-import Header from "../components/Header";
-import Nav from "../components/Nav";
-import InputBox from "../components/InputBox";
-import ButtonMod from "../components/ButtonMod";
+import Header from "../components/global/Header";
+import Nav from "../components/global/Nav";
+import InputBox from "../components/global/InputBox";
+import ButtonMod from "../components/global/ButtonMod";
 import { useNavigation } from "@react-navigation/native";
-import AddPlan from "../components/AddPlan";
+import AddPlan from "../components/profile/AddPlan";
+
 const editPlan = () => {};
 export default function ProfileEditScreen() {
   const navigator = useNavigation();
@@ -93,7 +94,7 @@ export default function ProfileEditScreen() {
       </ScrollView>
 
       <Nav active={"ProfileScreen"}> </Nav>
-      <AddPlan />
+      {/* <AddPlan /> */}
     </View>
   );
 }
