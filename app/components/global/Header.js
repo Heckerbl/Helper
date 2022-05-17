@@ -24,7 +24,6 @@ export default function Header({ title, notification, ham, chat, chatData }) {
   };
 
   // styles
-
   const style = StyleSheet.create({
     headerContainer: {
       flexDirection: "row",

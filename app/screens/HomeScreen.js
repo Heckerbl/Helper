@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import Header from "../components/global/Header";
 import HelperCard from "../components/global/HelperCard";
 import Nav from "../components/global/Nav.js";
 import SearchBox from "../components/homescreen/SearchBox";
 import globalStyle from "../styles/GlobalStyles.js";
+import { ContextStore } from "../context/Context";
 
 export default function HomeScreen({ navigation, route }) {
+  const dat = useContext(ContextStore);
+  console.log(dat);
   const user = {
     image: require("../assets/ref.png"),
     name: "Linus tech tips",
