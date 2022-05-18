@@ -1,9 +1,11 @@
 import { View, ScrollView, StyleSheet } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import globalStyle from "../styles/GlobalStyles";
 import Nav from "../components/global/Nav";
 import Header from "../components/global/Header";
 import MessageContainer from "../components/chat/MessageContainer";
+import { useNavigation } from "@react-navigation/native";
+import { ContextStore } from "../context/Context";
 
 export default function ChatScreen() {
   const messages = [
@@ -48,6 +50,16 @@ export default function ChatScreen() {
       active: true,
     },
   ];
+
+  const navigator = useNavigation();
+
+  const data = useContext(ContextStore);
+  const [user, fn] = data.usr;
+  // const user = data.usr[0];
+  if (user == "NOTLOGGEDIN") {
+    navigator.navigate("LoginScreen");
+  }
+
   return (
     <View style={[globalStyle.makeSafe, style.mainContainer]}>
       <Header ham={false} title="Messages" notification />

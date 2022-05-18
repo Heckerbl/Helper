@@ -12,24 +12,30 @@ export const ContextStore = createContext();
 export default function Context({ children }) {
   // setting the states
 
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState("NOTLOGGEDIN");
 
   // initializing the firebase app
   const firebaseApp = firebase.initializeApp(firebaseConfig);
   const auth = getAuth(firebaseApp);
 
   onAuthStateChanged(auth, (user) => {
+    /*
+// attension required.
+//*/
+    // TODO: make the google login
+    // following: https://javascript.plainenglish.io/react-native-firebase-adding-google-authenticaton-in-an-expo-project-2-ed20cb440732
+    // and adding signature to the google console
+
     if (user) {
       console.log(user);
       setUser(user);
     } else {
-      console.log("there is no logged in user");
-      setUser("");
+      setUser("NOTLOGGEDIN");
     }
   });
 
   return (
-    <ContextStore.Provider value={"hello context"}>
+    <ContextStore.Provider value={{ usr: [user, setUser] }}>
       {children}
     </ContextStore.Provider>
   );

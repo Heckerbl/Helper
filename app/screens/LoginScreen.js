@@ -1,8 +1,32 @@
-import { Text, View, StyleSheet, Image, Button } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import LoginButton from "../components/login/LoginButton";
+import { ContextStore } from "../context/Context";
+import { useContext } from "react";
+import firebase from "firebase/compat/app";
+import * as Google from "expo-google-app-auth";
+
 export default function LoginScreen() {
+  const { usr } = useContext(ContextStore);
+  const androidClientId =
+    "1022044952512-e6ftm4hklnncd5k59iu819qiu2u3lf0m.apps.googleusercontent.com";
   const handleFacebook = () => {};
-  const handleGoogle = () => {};
+  const handleGoogle = async () => {
+    try {
+      const result = await Google.logInAsync({
+        androidClientId: androidClientId,
+      });
+
+      // reference blog
+      //
+      //javascript.plainenglish.io/react-native-firebase-adding-google-authenticaton-in-an-expo-project-2-ed20cb440732
+
+      https: if (result.type == "success") {
+        console.log(result);
+      }
+    } catch ({ message }) {
+      alert(message);
+    }
+  };
   return (
     <View style={style.mainContainer}>
       <Image source={require("../assets/logo.png")} style={style.logo_img} />

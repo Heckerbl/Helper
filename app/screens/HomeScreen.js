@@ -9,7 +9,7 @@ import { ContextStore } from "../context/Context";
 
 export default function HomeScreen({ navigation, route }) {
   const dat = useContext(ContextStore);
-  console.log(dat);
+
   const user = {
     image: require("../assets/ref.png"),
     name: "Linus tech tips",
