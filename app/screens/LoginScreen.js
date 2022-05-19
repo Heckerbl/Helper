@@ -3,10 +3,18 @@ import LoginButton from "../components/login/LoginButton";
 import { ContextStore } from "../context/Context";
 import { useContext } from "react";
 import firebase from "firebase/compat/app";
+
+import "firebase/compat/auth";
+
 import * as Google from "expo-google-app-auth";
+import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
+  const navigator = useNavigation();
+
   const { usr } = useContext(ContextStore);
+
+  const [user, setUser] = usr;
   const androidClientId =
     "1022044952512-e6ftm4hklnncd5k59iu819qiu2u3lf0m.apps.googleusercontent.com";
   const handleFacebook = () => {};
@@ -16,12 +24,26 @@ export default function LoginScreen() {
         androidClientId: androidClientId,
       });
 
-      // reference blog
-      //
-      //javascript.plainenglish.io/react-native-firebase-adding-google-authenticaton-in-an-expo-project-2-ed20cb440732
+      if (result.type == "success") {
+        const credentials = firebase.auth.GoogleAuthProvider.credential(
+          result.idToken,
+          result.accessToken
+        );
 
-      https: if (result.type == "success") {
-        console.log(result);
+        firebase
+          .auth()
+          .signInWithCredential(credentials)
+          .catch((error) => {
+            console.log(error);
+          })
+          .then(() => {
+            // sends the user where it was redirected form to the login screen
+            navigator.goBack();
+
+            console.log(result.user);
+            // setting user
+            setUser(result.user);
+          });
       }
     } catch ({ message }) {
       alert(message);

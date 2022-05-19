@@ -6,7 +6,7 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import globalStyle from "../styles/GlobalStyles";
 import Nav from "../components/global/Nav";
 import Header from "../components/global/Header";
@@ -16,20 +16,62 @@ import AddFrn from "../assets/addFrn.svg";
 import Plan from "../components/profile/Plan.js";
 import EditIcon from "../assets/edit.svg";
 import { useNavigation } from "@react-navigation/native";
+import { ContextStore } from "../context/Context";
+import SetupProfile from "../assets/setupProfile.svg";
+
+// firebase
+import { getProfileInfo } from "../../firebase/Profile";
+import ButtonMod from "../components/global/ButtonMod";
+import { logout } from "../../firebase/Logout";
+// user data reference
+// Object {
+//   "displayName": "Saroj Regmi",
+//   "email": "sarojregmi.official@gmail.com",
+//   "phoneNumber": null,
+//   "photoURL": "https://lh3.googleusercontent.com/a-/AOh14GjwP_oxD8loPrM9VVerDrn2WmCQ6pqdIPoawFBUcQ=s96-c",
+//   "providerId": "google.com",
+//   "uid": "108884798923453718918",
+// }
 
 export default function ProfileScreen({ route }) {
-  const user = {
-    image: require("../assets/ref.png"),
-    name: "Linus tech tips",
-    quote: "Pc is heart and the heart is heart i need to build it",
-  };
-  const { name, image, quote } = user;
+  // checking if the user is logged in or not
 
+  const navigator = useNavigation();
+
+  const { usr } = useContext(ContextStore);
+  const [loggedInUser] = usr;
+
+  const id = loggedInUser.uid;
+  const profile = getProfileInfo(id);
+
+  // fetching the profile informaiton from the firbase
+
+  const login = () => navigator.navigate("LoginScreen");
+
+  const notLoggedIn = loggedInUser == "NOTLOGGEDIN";
+  // working area now
+  let user;
+  if (profile) {
+    user = profile;
+  } else if (loggedInUser == "NOTLOGGEDIN") {
+    user = {
+      image: "",
+      name: "New user",
+      // quote: "Pc is heart and the heart is heart i need to build it",
+    };
+  } else {
+    user = {
+      image: loggedInUser.photoURL,
+      name: loggedInUser.displayName,
+      // quote: "Pc is heart and the heart is heart i need to build it",
+    };
+  }
+
+  let { name, image, quote } = user;
   const active = 1;
 
-  const usr = "Linus tech tips";
   const mineProfile = () => {
-    return usr === user.name;
+    return loggedInUser.displayName === user.name;
   };
   // title, price, offer, time, response, tags;
   // just a reference data not the actual data
@@ -63,8 +105,6 @@ export default function ProfileScreen({ route }) {
     },
   ];
 
-  const navigator = useNavigation();
-
   // funciton to open the edit page
   const editProfile = () => {
     navigator.navigate("ProfileEditScreen");
@@ -87,48 +127,115 @@ export default function ProfileScreen({ route }) {
         <View style={style.contents}>
           {/* the container that contains the profile image name and the quote */}
           <View style={style.upperContainer}>
-            <Image source={image} style={style.img} />
+            <Image
+              source={{
+                uri: "https://lh3.googleusercontent.com/a-/AOh14GjwP_oxD8loPrM9VVerDrn2WmCQ6pqdIPoawFBUcQ=k-s256",
+              }}
+              onLoadStart={() => console.log("loading")}
+              onLoadEnd={() => console.log("done loading")}
+              height={100}
+              width={100}
+              style={style.img}
+            />
 
             <View style={style.nm_qt}>
               <Text style={style.name}>{name}</Text>
-              <View style={style.quote}>
-                <Quote style={style.svg_quote} />
-                <Text style={style.quote_text}>{quote}</Text>
-              </View>
+
+              {/* quote section  */}
+              {profile ? (
+                <View style={style.quote}>
+                  <Quote style={style.svg_quote} />
+                  <Text style={style.quote_text}>{quote}</Text>
+                </View>
+              ) : null}
             </View>
           </View>
-          <View style={[globalStyle.flexCenter, style.btn_con]}>
-            {mineProfile() ? (
-              <Pressable
-                style={[globalStyle.button_with_icon, style.edit]}
-                onPress={editProfile}
-              >
-                <Text style={globalStyle.lightText}>Edit profile</Text>
-                <EditIcon />
-              </Pressable>
-            ) : (
-              <>
-                <Pressable
-                  style={[globalStyle.button_with_icon, style.message]}
-                  onPress={message}
-                >
-                  <Text style={globalStyle.lightText}>Message</Text>
-                  <MessengerIco />
-                </Pressable>
-                <Pressable
-                  style={[globalStyle.smallIconBox, style.AddFrn]}
-                  onPress={addfrn}
-                >
-                  <AddFrn />
-                </Pressable>
-              </>
-            )}
-          </View>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {plans.map((plan, index) => {
-              return <Plan key={index} data={plan} />;
-            })}
-          </ScrollView>
+
+          {notLoggedIn ? null : (
+            <View style={[globalStyle.flexCenter, style.btn_con]}>
+              {mineProfile() ? (
+                profile ? (
+                  <Pressable
+                    style={[globalStyle.button_with_icon, style.edit]}
+                    onPress={editProfile}
+                  >
+                    <Text style={globalStyle.lightText}>Edit profile</Text>
+                    <EditIcon />
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    style={[globalStyle.button_with_icon, style.edit]}
+                    onPress={editProfile}
+                  >
+                    <Text style={globalStyle.lightText}>Setup profile</Text>
+                    <SetupProfile style={style.SetupProfile} />
+                  </Pressable>
+                )
+              ) : (
+                <>
+                  <Pressable
+                    style={[globalStyle.button_with_icon, style.message]}
+                    onPress={message}
+                  >
+                    <Text style={globalStyle.lightText}>Message</Text>
+                    <MessengerIco />
+                  </Pressable>
+                  <Pressable
+                    style={[globalStyle.smallIconBox, style.AddFrn]}
+                    onPress={addfrn}
+                  >
+                    <AddFrn />
+                  </Pressable>
+                </>
+              )}
+            </View>
+          )}
+
+          {/*    name,
+    color,
+    height,
+    width,
+    borderRad,
+    backgroundColor,
+    marginTop,
+    marginLeft,
+    _FN, */}
+          {notLoggedIn ? (
+            <ButtonMod
+              color={"#fff"}
+              name={"Login"}
+              height={35}
+              width={110}
+              borderRad={13}
+              backgroundColor={"#52BF9B"}
+              _FN={login}
+              style={style.logBtn}
+              marginTop={20}
+            />
+          ) : (
+            <ButtonMod
+              color={"#fff"}
+              name={"Logout"}
+              height={35}
+              width={110}
+              borderRad={13}
+              backgroundColor={"#D45151"}
+              _FN={logout}
+              style={style.logBtn}
+              marginTop={20}
+            />
+          )}
+
+          {notLoggedIn ? null : (
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              {plans.map((plan, index) => {
+                return <Plan key={index} data={plan} />;
+              })}
+            </ScrollView>
+          )}
         </View>
       </ScrollView>
       <Nav active={route.name} />
@@ -137,6 +244,15 @@ export default function ProfileScreen({ route }) {
 }
 
 const style = StyleSheet.create({
+  // login and logout btns
+  logBtn: {
+    alignSelf: "flex-start",
+  },
+
+  // setup profile icon
+  SetupProfile: {
+    marginLeft: 10,
+  },
   quote: {
     marginTop: 14,
     flexDirection: "row",

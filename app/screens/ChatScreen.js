@@ -53,11 +53,11 @@ export default function ChatScreen() {
 
   const navigator = useNavigation();
 
-  const data = useContext(ContextStore);
-  const [user, fn] = data.usr;
+  const { usr } = useContext(ContextStore);
+  const [user, fn] = usr;
   // const user = data.usr[0];
   if (user == "NOTLOGGEDIN") {
-    navigator.navigate("LoginScreen");
+    () => navigator.navigate("LoginScreen");
   }
 
   return (
