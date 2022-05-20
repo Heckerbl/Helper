@@ -15,9 +15,29 @@ export const ContextStore = createContext();
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 export default function Context({ children }) {
-  // setting the states
-
+  // user login state
   const [loggedInUser, setUser] = useState("NOTLOGGEDIN");
+
+  // plan popup show state
+  const [showSetPlan, setShowSetPlan] = useState(false);
+
+  // state that contains the my profile
+
+  const [myProfile, setMyProfile] = useState({
+    displayName: "",
+    quote: "",
+    jobTitle: "",
+    plans: [
+      {
+        id: "",
+        name: "",
+        price: "",
+        description: "",
+        workingTime: "",
+        response: "",
+      },
+    ],
+  });
 
   // setting the firebase auth
   const auth = getAuth(firebaseApp);
@@ -30,7 +50,13 @@ export default function Context({ children }) {
   });
 
   return (
-    <ContextStore.Provider value={{ usr: [loggedInUser, setUser] }}>
+    <ContextStore.Provider
+      value={{
+        usr: [loggedInUser, setUser],
+        showPlan: [showSetPlan, setShowSetPlan],
+        myProfileData: [myProfile, setMyProfile],
+      }}
+    >
       {children}
     </ContextStore.Provider>
   );

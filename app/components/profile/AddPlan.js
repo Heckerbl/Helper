@@ -1,42 +1,87 @@
 import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import InputBox from "../global/InputBox";
 import ButtonMod from "../global/ButtonMod";
+import { ContextStore } from "../../context/Context";
 
-export default function AddPlan() {
+export default function AddPlan({ data }) {
+  const { showPlan } = useContext(ContextStore);
+  const [showSetPlan, setShowSetPlan] = showPlan;
+  const discardChanges = () => {
+    setShowSetPlan(false);
+  };
+
+  const saveChanges = () => {};
   return (
     <View style={style.mainContainer}>
       {/* the top most container that contains the price and the title of the plan  */}
       <View style={style.titlePrice}>
         <View style={[style.title, style.inpBoxCon]}>
           <Text Style={style.title}>Plan Title</Text>
-          <InputBox width={142} name={"EX: Basic plan"} lines={1} />
+          <InputBox
+            width={142}
+            name={"EX: Basic plan"}
+            lines={1}
+            stateName="name"
+            plan
+            data={{ id: showSetPlan.id, name: showSetPlan.name || "" }}
+          />
         </View>
         <View style={[style.price, style.inpBoxCon]}>
           <Text Style={style.title}>Price</Text>
-          <InputBox width={142} name={"EX: USD $29"} lines={1} />
+          <InputBox
+            width={142}
+            name={"EX: USD $29"}
+            lines={1}
+            stateName="price"
+            data={{ id: showSetPlan.id, price: showSetPlan.price || "" }}
+            plan
+          />
         </View>
       </View>
 
       <View style={[style.quote, style.inpBoxCon]}>
-        <Text Style={style.title}>Quote</Text>
+        <Text Style={style.title}>Description</Text>
         <InputBox
           width={"100%"}
           name={
-            "EX: this is a example quote that is going to be changed later on it is quite large but never mind. It will be fine"
+            "Enter the description of the plan, What are the features that are going to be included with the plan and some more details about the plan "
           }
           lines={3}
+          stateName="description"
+          plan
+          data={{
+            id: showSetPlan.id,
+            description: showSetPlan.description || "",
+          }}
         />
       </View>
 
       <View style={[style.wrkres, style.titlePrice]}>
         <View style={[style.work, style.inpBoxCon]}>
           <Text Style={style.title}>Working Time</Text>
-          <InputBox width={142} name={"Basic plan"} lines={1} />
+          <InputBox
+            width={142}
+            name={"EX: 10 hours"}
+            lines={1}
+            plan
+            stateName="workingTime"
+            data={{
+              id: showSetPlan.id,
+              workingTime: showSetPlan.workingTime || "",
+            }}
+          />
         </View>
         <View style={[style.price, style.inpBoxCon]}>
           <Text Style={style.title}>Response</Text>
-          <InputBox width={142} name={"Basic plan"} lines={1} />
+          <InputBox
+            width={142}
+            name={"EX: 5-6 times"}
+            lines={1}
+            stateName="response"
+            plan
+            data={{ id: showSetPlan.id, response: showSetPlan.response || "" }}
+          />
         </View>
       </View>
       {/* save CHanges */}
@@ -48,8 +93,7 @@ export default function AddPlan() {
           width={110}
           borderRad={13}
           backgroundColor={"#52BF9B"}
-
-          // _FN={saveChanges}
+          _FN={saveChanges}
         />
         {/* discard changes */}
         <ButtonMod
@@ -60,7 +104,7 @@ export default function AddPlan() {
           borderRad={13}
           backgroundColor={"#D45151"}
           marginLeft={10}
-          // _FN={discardChanges}
+          _FN={discardChanges}
         />
       </View>
     </View>

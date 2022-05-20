@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import globalStyle from "../styles/GlobalStyles";
 import Header from "../components/global/Header";
 import Nav from "../components/global/Nav";
@@ -7,15 +7,30 @@ import InputBox from "../components/global/InputBox";
 import ButtonMod from "../components/global/ButtonMod";
 import { useNavigation } from "@react-navigation/native";
 import AddPlan from "../components/profile/AddPlan";
+// context
+import { ContextStore } from "../context/Context";
 
 const editPlan = () => {};
 export default function ProfileEditScreen() {
+  const { showPlan } = useContext(ContextStore);
+  const [showSetPlan, setShowSetPlan] = showPlan;
   const navigator = useNavigation();
   const saveChanges = () => {};
-  const discardChanges = () => {};
-  const addPlan = () => {
+  const discardChanges = () => {
+    navigator.goBack();
+  };
+  const addMoreplans = () => {
+    setShowSetPlan({
+      id: "",
+      name: "newplan",
+      price: "10",
+      description: "",
+      workingTime: "",
+      response: "",
+    });
     // open the popup type of tab to add the plans with their details.
   };
+
   return (
     <View style={[globalStyle.makeSafe, style.main_container]}>
       <Header ham={false} title={"profile > me"} notification></Header>
@@ -25,7 +40,11 @@ export default function ProfileEditScreen() {
           {/* name */}
           <View style={[style.name, style.inpBoxCon]}>
             <Text Style={style.title}>Name</Text>
-            <InputBox name={"Enter Your Name"} lines={1} />
+            <InputBox
+              name={"Enter Your Name"}
+              lines={1}
+              stateName={"displayName"}
+            />
           </View>
 
           {/* quote */}
@@ -35,6 +54,7 @@ export default function ProfileEditScreen() {
             <InputBox
               name={"Enter a quote to show in your profile"}
               lines={2}
+              stateName={"quote"}
             />
           </View>
 
@@ -46,6 +66,7 @@ export default function ProfileEditScreen() {
                 "Enter your qualification and experties so that people can find your talent and hire you."
               }
               lines={3}
+              stateName={"jobTitle"}
             />
           </View>
 
@@ -56,7 +77,7 @@ export default function ProfileEditScreen() {
             {planContainer("Premium Plan", "USD $36")}
           </View>
 
-          {/* addplan */}
+          {/* addMoreplans */}
           <ButtonMod
             name={"Add more plan"}
             color={"#fff"}
@@ -64,7 +85,7 @@ export default function ProfileEditScreen() {
             width={200}
             borderRad={13}
             backgroundColor={"#000"}
-            _FN={addPlan}
+            _FN={addMoreplans}
             marginTop={29}
           />
           {/* save CHanges */}
@@ -94,7 +115,9 @@ export default function ProfileEditScreen() {
       </ScrollView>
 
       <Nav active={"ProfileScreen"}> </Nav>
-      {/* <AddPlan /> */}
+
+      {showSetPlan ? <AddPlan /> : null}
+      {/*  */}
     </View>
   );
 }

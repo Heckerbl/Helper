@@ -55,7 +55,8 @@ export default function ProfileScreen({ route }) {
     user = profile;
   } else if (loggedInUser == "NOTLOGGEDIN") {
     user = {
-      image: "",
+      image:
+        "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
       name: "New user",
       // quote: "Pc is heart and the heart is heart i need to build it",
     };
@@ -71,7 +72,7 @@ export default function ProfileScreen({ route }) {
   const active = 1;
 
   const mineProfile = () => {
-    return loggedInUser.displayName === user.name;
+    return loggedInUser.displayName === name;
   };
   // title, price, offer, time, response, tags;
   // just a reference data not the actual data
@@ -110,7 +111,7 @@ export default function ProfileScreen({ route }) {
     navigator.navigate("ProfileEditScreen");
   };
 
-  // for opeingin the messenger page
+  // for opening the messenger page
   const message = () => {};
 
   // for adding as a friend
@@ -129,12 +130,10 @@ export default function ProfileScreen({ route }) {
           <View style={style.upperContainer}>
             <Image
               source={{
-                uri: "https://lh3.googleusercontent.com/a-/AOh14GjwP_oxD8loPrM9VVerDrn2WmCQ6pqdIPoawFBUcQ=k-s256",
+                uri: image,
               }}
               onLoadStart={() => console.log("loading")}
               onLoadEnd={() => console.log("done loading")}
-              height={100}
-              width={100}
               style={style.img}
             />
 
@@ -226,7 +225,7 @@ export default function ProfileScreen({ route }) {
             />
           )}
 
-          {notLoggedIn ? null : (
+          {notLoggedIn ? null : profile ? (
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}
@@ -235,7 +234,7 @@ export default function ProfileScreen({ route }) {
                 return <Plan key={index} data={plan} />;
               })}
             </ScrollView>
-          )}
+          ) : null}
         </View>
       </ScrollView>
       <Nav active={route.name} />
@@ -244,6 +243,12 @@ export default function ProfileScreen({ route }) {
 }
 
 const style = StyleSheet.create({
+  img: {
+    // backgroundColor: "#333",
+    borderRadius: 50,
+    height: 95,
+    width: 95,
+  },
   // login and logout btns
   logBtn: {
     alignSelf: "flex-start",
