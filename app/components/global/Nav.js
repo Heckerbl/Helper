@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
+import { useContext } from "react";
 import Home from "../../assets/home.svg";
 import Home_active from "../../assets/home_a.svg";
 import Chat from "../../assets/chat.svg";
@@ -10,8 +10,11 @@ import ActiveBar from "../../assets/active_bar.svg";
 import Search from "../../assets/search.svg";
 import Search_active from "../../assets/search_a.svg";
 import { useNavigation } from "@react-navigation/native";
+import { ContextStore } from "../../context/Context";
 
 export default function Nav({ active }) {
+  const { usr } = useContext(ContextStore);
+  const [loggedInUser] = usr;
   const navigation = useNavigation();
   return (
     <View style={style.mainContainer}>
@@ -66,7 +69,10 @@ export default function Nav({ active }) {
       <TouchableOpacity
         style={active == "ProfileScreen" ? style.active : style.normal}
         onPress={() => {
-          navigation.navigate("ProfileScreen");
+          navigation.navigate("ProfileScreen", {
+            id: loggedInUser.uid,
+            mine: true,
+          });
         }}
       >
         {active == "ProfileScreen" ? (

@@ -8,15 +8,17 @@ import globalStyle from "../styles/GlobalStyles.js";
 import { ContextStore } from "../context/Context";
 
 export default function HomeScreen({ navigation, route }) {
-  const dat = useContext(ContextStore);
-
-  const user = {
-    image: require("../assets/ref.png"),
-    name: "Linus tech tips",
-    job: "professional pc builder",
-    stars: 4,
-    quote: "Pc is heart and the heart is heart i need to build it",
-  };
+  const { helperData } = useContext(ContextStore);
+  const [helper, setHelper] = helperData;
+  const user = helper;
+  // const user = {
+  //   image: require("../assets/ref.png"),
+  //   name: "Linus tech tips",
+  //   job: "professional pc builder",
+  //   stars: 4,
+  //   quote: "Pc is heart and the heart is heart i need to build it",
+  // };
+  const stars = 4;
 
   return (
     <View
@@ -33,9 +35,13 @@ export default function HomeScreen({ navigation, route }) {
 
         <View style={style.helper_container}>
           <Text style={style.title}>New Helper</Text>
-          <HelperCard user={user} />
+          {user.map((usr, i) => {
+            return <HelperCard user={usr} key={i} />;
+          })}
           <Text style={style.title}>Popular Helper</Text>
-          <HelperCard user={user} />
+          {user.map((usr, i) => {
+            return <HelperCard user={usr} key={i} />;
+          })}
         </View>
       </ScrollView>
       <Nav active={route.name} navigation={navigation} />

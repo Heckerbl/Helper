@@ -9,12 +9,12 @@ export default function Plan({ data }) {
   };
 
   // console.log("plans are being executed");
-  const { title, price, offer, time, response, tags } = data;
+  const { name, price, description, workingTime, response, tags } = data;
   return (
     <View style={style.main_container}>
       {/* title of the container */}
       <View style={style.title_price}>
-        <Text style={style.headerTitle}>{title}</Text>
+        <Text style={style.headerTitle}>{name}</Text>
         <Text style={style.price}>Price :{price}</Text>
       </View>
 
@@ -23,14 +23,14 @@ export default function Plan({ data }) {
         {/* offer section */}
         <View style={style.offer_container}>
           <Text style={style.title}>Offer :</Text>
-          <Text style={style.des}>{offer}</Text>
+          <Text style={style.des}>{description}</Text>
         </View>
         {/* time and response section */}
         <View style={style.time_response}>
           {/* time */}
           <View style={style.time_container}>
             <Text style={style.title}>Time :</Text>
-            <Text style={style.des}>{time}</Text>
+            <Text style={style.des}>{workingTime}</Text>
           </View>
           {/* response time */}
           <View style={style.res_container}>
@@ -41,16 +41,18 @@ export default function Plan({ data }) {
 
         {/* tags */}
         <View style={style.tags_container}>
-          {tags.map((tag, index) => {
-            return (
-              <View
-                style={[style.tag, index != 0 ? style.giveSpace : ""]}
-                key={index}
-              >
-                <Text style={style.tagText}>{tag}</Text>
-              </View>
-            );
-          })}
+          {tags
+            ? tags.map((tag, index) => {
+                return (
+                  <View
+                    style={[style.tag, index != 0 ? style.giveSpace : ""]}
+                    key={index}
+                  >
+                    <Text style={style.tagText}>{tag}</Text>
+                  </View>
+                );
+              })
+            : null}
         </View>
 
         {/* button */}

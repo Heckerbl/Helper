@@ -4,14 +4,32 @@ import InputBox from "../global/InputBox";
 import ButtonMod from "../global/ButtonMod";
 import { ContextStore } from "../../context/Context";
 
-export default function AddPlan({ data }) {
-  const { showPlan } = useContext(ContextStore);
+export default function AddPlan() {
+  const { showPlan, myProfileData } = useContext(ContextStore);
   const [showSetPlan, setShowSetPlan] = showPlan;
+  const [myProfile, setMyProfile] = myProfileData;
+
+  // the funciton which runs when discard changes btn is clicked
   const discardChanges = () => {
+    // since the state is saved without clicking the save btn more like the auto save function we need to pop the last one out to discard the changes so,
+
+    const newProfileData = myProfile;
+    // removing using pop because push was used to add the data which means the new data is at the end
+    newProfileData.plans.pop();
+    // setting the old state to the new state
+    setMyProfile(newProfileData);
+
+    // closing the popup
     setShowSetPlan(false);
   };
 
-  const saveChanges = () => {};
+  const saveChanges = () => {
+    console.log({ showSetPlan, myProfile });
+    // since the state ie myprofile is updated every time the user enters anything in the input box so no need to do anything in the save btn except to close the popup
+
+    setShowSetPlan(false);
+    // save the data to the database
+  };
   return (
     <View style={style.mainContainer}>
       {/* the top most container that contains the price and the title of the plan  */}

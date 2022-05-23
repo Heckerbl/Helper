@@ -40,9 +40,10 @@ export default function LoginScreen() {
             // sends the user where it was redirected form to the login screen
             navigator.goBack();
 
-            console.log(result.user);
             // setting user
             setUser(result.user);
+
+            // setting the user profile
           });
       }
     } catch ({ message }) {

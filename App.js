@@ -8,6 +8,7 @@ import IndividualChatScreen from "./app/screens/IndividualChatScreen.js";
 import ChatScreen from "./app/screens/ChatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useContext } from "react";
 
 // context
 

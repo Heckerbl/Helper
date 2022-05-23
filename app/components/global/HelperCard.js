@@ -1,20 +1,17 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import Star from "../../assets/Star.svg";
 import Quote from "../../assets/Quote.svg";
 import { getRandomColor } from "../../styles/GlobalStyles.js";
 import { useNavigation } from "@react-navigation/native";
 export default function HelperCard({ user }) {
-  const { image, name, job, stars, quote } = user;
+  const { id, image, displayName, jobTitle, quote } = user;
+  const stars = Math.floor(Math.random() * (5 - 1 + 1) + 1);
   const navigator = useNavigation();
 
   const handleCardClick = () => {
-    navigator.navigate("ProfileScreen", user);
+    navigator.navigate("ProfileScreen", {
+      id: id,
+    });
   };
 
   return (
@@ -22,11 +19,11 @@ export default function HelperCard({ user }) {
       <View style={style.title_container}>
         <View style={style.image_container}>
           <View style={style.circle}></View>
-          <Image source={image} style={style.img} />
+          <Image source={{ uri: image }} style={style.img} />
         </View>
         <View style={style.nm_jb}>
-          <Text style={style.name}>{name}</Text>
-          <Text style={style.job}>{job}</Text>
+          <Text style={style.name}>{displayName}</Text>
+          <Text style={style.job}>{jobTitle}</Text>
         </View>
       </View>
       <View style={style.stars}>
@@ -80,9 +77,6 @@ const style = StyleSheet.create({
     width: 113,
     backgroundColor: getRandomColor(),
     borderRadius: 113,
-    position: "absolute",
-    marginLeft: -2.3,
-    marginTop: -2.3,
   },
   image_container: {
     position: "relative",
@@ -108,5 +102,10 @@ const style = StyleSheet.create({
   },
   star: {
     marginLeft: 10,
+  },
+  img: {
+    height: 110,
+    width: 110,
+    borderRadius: 55,
   },
 });

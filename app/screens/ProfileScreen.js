@@ -6,7 +6,7 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import globalStyle from "../styles/GlobalStyles";
 import Nav from "../components/global/Nav";
 import Header from "../components/global/Header";
@@ -23,6 +23,13 @@ import SetupProfile from "../assets/setupProfile.svg";
 import { getProfileInfo } from "../../firebase/Profile";
 import ButtonMod from "../components/global/ButtonMod";
 import { logout } from "../../firebase/Logout";
+
+// things that are needed for firebase
+import { dbReference } from "../../firebase/firebase";
+import { query, where, onSnapshot, collection } from "firebase/firestore";
+import "firebase/compat/firestore";
+import "firebase/auth";
+
 // user data reference
 // Object {
 //   "displayName": "Saroj Regmi",
@@ -35,14 +42,40 @@ import { logout } from "../../firebase/Logout";
 
 export default function ProfileScreen({ route }) {
   // checking if the user is logged in or not
+  const { id, mine } = route.params;
 
   const navigator = useNavigation();
 
-  const { usr } = useContext(ContextStore);
-  const [loggedInUser] = usr;
+  const { usr, myProfileData, createNew } = useContext(ContextStore);
+  const [loggedInUser, setUser] = usr;
+  const [myProfile, setMyProfile] = myProfileData;
+  const [, setIsNew] = createNew;
 
-  const id = loggedInUser.uid;
-  const profile = getProfileInfo(id);
+  // getting the profile data from the data base
+  useEffect(() => {
+    if (loggedInUser != "NOTLOGGEDIN") {
+      const q = query(
+        collection(dbReference, "/profiles"),
+        where("id", "==", id)
+      );
+      onSnapshot(q, (snapshot) => {
+        if (snapshot.docs.length > 0) {
+          setMyProfile(snapshot.docs[0].data());
+
+          let doc = snapshot.docs[0].id;
+          // it means that the profile that contains the doc url too in short docedprofile
+          let docedProfile = snapshot.docs[0].data();
+          docedProfile.key = doc;
+
+          setMyProfile(docedProfile);
+          setIsNew(false);
+        }
+      });
+      console.log(myProfile);
+      // setMyProfile(getProfileInfo(loggedInUser.uid));
+      // console.log("\n\n\n The value of my profile is ");
+    }
+  }, []);
 
   // fetching the profile informaiton from the firbase
 
@@ -51,60 +84,59 @@ export default function ProfileScreen({ route }) {
   const notLoggedIn = loggedInUser == "NOTLOGGEDIN";
   // working area now
   let user;
-  if (profile) {
-    user = profile;
+  if (myProfile) {
+    user = myProfile;
   } else if (loggedInUser == "NOTLOGGEDIN") {
     user = {
       image:
         "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
-      name: "New user",
+      displayName: "New user",
       // quote: "Pc is heart and the heart is heart i need to build it",
     };
   } else {
     user = {
       image: loggedInUser.photoURL,
-      name: loggedInUser.displayName,
+      displayName: loggedInUser.displayName,
       // quote: "Pc is heart and the heart is heart i need to build it",
     };
   }
 
-  let { name, image, quote } = user;
+  let { displayName, image, quote } = user;
   const active = 1;
 
-  const mineProfile = () => {
-    return loggedInUser.displayName === name;
-  };
   // title, price, offer, time, response, tags;
   // just a reference data not the actual data
-  const plans = [
-    {
-      title: "Average plan",
-      price: "USD 35",
-      time: "3 Days",
-      response: "2 times",
-      tags: ["New Plan", "Popular Plan"],
-      offer:
-        "This is the Average plan, this is just above the basic plan. I will do many things in this plan",
-    },
-    {
-      title: "Basic plan",
-      price: "USD 5",
-      time: "3 Days",
-      response: "2 times",
-      tags: ["New Plan", "Popular Plan"],
-      offer:
-        "This is the basic plan, this is just below all the plan. I will only some things in this plan",
-    },
-    {
-      title: "Premium plan",
-      price: "USD 50",
-      time: "3 Days",
-      response: "2 times",
-      tags: ["New Plan", "Popular Plan"],
-      offer:
-        "This is the Premium plan , this is just above all the plan. I will all the  things in this plan",
-    },
-  ];
+  const plans = myProfile && myProfile.plans;
+
+  // [
+  //   {
+  //     title: "Average plan",
+  //     price: "USD 35",
+  //     time: "3 Days",
+  //     response: "2 times",
+  //     tags: ["New Plan", "Popular Plan"],
+  //     offer:
+  //       "This is the Average plan, this is just above the basic plan. I will do many things in this plan",
+  //   },
+  //   {
+  //     title: "Basic plan",
+  //     price: "USD 5",
+  //     time: "3 Days",
+  //     response: "2 times",
+  //     tags: ["New Plan", "Popular Plan"],
+  //     offer:
+  //       "This is the basic plan, this is just below all the plan. I will only some things in this plan",
+  //   },
+  //   {
+  //     title: "Premium plan",
+  //     price: "USD 50",
+  //     time: "3 Days",
+  //     response: "2 times",
+  //     tags: ["New Plan", "Popular Plan"],
+  //     offer:
+  //       "This is the Premium plan , this is just above all the plan. I will all the  things in this plan",
+  //   },
+  // ];
 
   // funciton to open the edit page
   const editProfile = () => {
@@ -117,10 +149,16 @@ export default function ProfileScreen({ route }) {
   // for adding as a friend
   const addfrn = () => {};
 
+  const handleLogout = () => {
+    logout();
+    setMyProfile();
+    setUser("NOTLOGGEDIN");
+  };
+
   return (
     <View style={[globalStyle.makeSafe, style.main_container]}>
       <Header
-        title={"Profile > " + mineProfile() ? "Me" : user.name}
+        title={"Profile > " + mine ? "Me" : displayName}
         ham={false}
         notification
       />
@@ -132,16 +170,14 @@ export default function ProfileScreen({ route }) {
               source={{
                 uri: image,
               }}
-              onLoadStart={() => console.log("loading")}
-              onLoadEnd={() => console.log("done loading")}
               style={style.img}
             />
 
             <View style={style.nm_qt}>
-              <Text style={style.name}>{name}</Text>
+              <Text style={style.name}>{displayName}</Text>
 
               {/* quote section  */}
-              {profile ? (
+              {myProfile ? (
                 <View style={style.quote}>
                   <Quote style={style.svg_quote} />
                   <Text style={style.quote_text}>{quote}</Text>
@@ -152,8 +188,8 @@ export default function ProfileScreen({ route }) {
 
           {notLoggedIn ? null : (
             <View style={[globalStyle.flexCenter, style.btn_con]}>
-              {mineProfile() ? (
-                profile ? (
+              {mine ? (
+                myProfile ? (
                   <Pressable
                     style={[globalStyle.button_with_icon, style.edit]}
                     onPress={editProfile}
@@ -199,40 +235,44 @@ export default function ProfileScreen({ route }) {
     marginTop,
     marginLeft,
     _FN, */}
-          {notLoggedIn ? (
-            <ButtonMod
-              color={"#fff"}
-              name={"Login"}
-              height={35}
-              width={110}
-              borderRad={13}
-              backgroundColor={"#52BF9B"}
-              _FN={login}
-              style={style.logBtn}
-              marginTop={20}
-            />
-          ) : (
-            <ButtonMod
-              color={"#fff"}
-              name={"Logout"}
-              height={35}
-              width={110}
-              borderRad={13}
-              backgroundColor={"#D45151"}
-              _FN={logout}
-              style={style.logBtn}
-              marginTop={20}
-            />
-          )}
+          {mine ? (
+            notLoggedIn ? (
+              <ButtonMod
+                color={"#fff"}
+                name={"Login"}
+                height={35}
+                width={110}
+                borderRad={13}
+                backgroundColor={"#52BF9B"}
+                _FN={login}
+                style={style.logBtn}
+                marginTop={20}
+              />
+            ) : (
+              <ButtonMod
+                color={"#fff"}
+                name={"Logout"}
+                height={35}
+                width={110}
+                borderRad={13}
+                backgroundColor={"#D45151"}
+                _FN={handleLogout}
+                style={style.logBtn}
+                marginTop={20}
+              />
+            )
+          ) : null}
 
-          {notLoggedIn ? null : profile ? (
+          {notLoggedIn ? null : myProfile ? (
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}
             >
-              {plans.map((plan, index) => {
-                return <Plan key={index} data={plan} />;
-              })}
+              {plans
+                ? plans.map((plan, index) => {
+                    return <Plan key={index} data={plan} />;
+                  })
+                : null}
             </ScrollView>
           ) : null}
         </View>

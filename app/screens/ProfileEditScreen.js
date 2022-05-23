@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Alert,
+} from "react-native";
 import React, { useContext } from "react";
 import globalStyle from "../styles/GlobalStyles";
 import Header from "../components/global/Header";
@@ -9,26 +16,61 @@ import { useNavigation } from "@react-navigation/native";
 import AddPlan from "../components/profile/AddPlan";
 // context
 import { ContextStore } from "../context/Context";
+import PlanBox from "../components/profile/PlanBox";
+import { setNewProfile, updateTheProfile } from "../../firebase/Profile";
 
-const editPlan = () => {};
 export default function ProfileEditScreen() {
-  const { showPlan } = useContext(ContextStore);
-  const [showSetPlan, setShowSetPlan] = showPlan;
+  // navigator
   const navigator = useNavigation();
-  const saveChanges = () => {};
+
+  // context related things
+  const { showPlan, myProfileData, usr, createNew } = useContext(ContextStore);
+  const [showSetPlan, setShowSetPlan] = showPlan;
+  const [myProfile, setMyProfile] = myProfileData;
+  const [loggedInUser] = usr;
+  const [isNew] = createNew;
+
+  // for pushing the changes to the backend and the database
+  const saveChanges = () => {
+    // ok after we hit save we must now send the data to the firebase for that i will have to change the data and add a id in it. for knowing whose profile is  it.
+
+    // we will need to check if the profile already exists or not if it does we need to update it or else create a new record
+    // const id = loggedInUser.uid;
+    // if the profile is new profile then it is fair that the new document must be created in the database
+    if (isNew) {
+      const newProfile = { id: "", ...myProfile };
+      newProfile.id = loggedInUser.uid;
+      newProfile.image = loggedInUser.photoURL;
+      // sets the state
+      setMyProfile(newProfile);
+      console.log(newProfile);
+
+      // sets the data in the database firebase
+      setNewProfile(myProfile);
+
+      navigator.goBack();
+      Alert.alert("Congrats", "Your profile has been setup successfully");
+    } else {
+      updateTheProfile(myProfile.key, myProfile);
+      navigator.goBack();
+      Alert.alert("Congrats", "Your profile has been updated successfully");
+    }
+  };
+
+  // when the discard btn is pressed in the profile page.
   const discardChanges = () => {
     navigator.goBack();
   };
   const addMoreplans = () => {
+    // the plans is show set plans is set to an empty object since there is no data when the user first clicks add more plan
     setShowSetPlan({
-      id: "",
-      name: "newplan",
-      price: "10",
+      id: new Date().toISOString(),
+      name: "",
+      price: "",
       description: "",
       workingTime: "",
       response: "",
     });
-    // open the popup type of tab to add the plans with their details.
   };
 
   return (
@@ -44,6 +86,7 @@ export default function ProfileEditScreen() {
               name={"Enter Your Name"}
               lines={1}
               stateName={"displayName"}
+              data={{ displayName: myProfile ? myProfile.displayName : "" }}
             />
           </View>
 
@@ -55,6 +98,7 @@ export default function ProfileEditScreen() {
               name={"Enter a quote to show in your profile"}
               lines={2}
               stateName={"quote"}
+              data={{ quote: myProfile ? myProfile.quote : "" }}
             />
           </View>
 
@@ -67,14 +111,19 @@ export default function ProfileEditScreen() {
               }
               lines={3}
               stateName={"jobTitle"}
+              data={{ jobTitle: myProfile ? myProfile.jobTitle : "" }}
             />
           </View>
 
           {/* plans */}
           <View style={[style.plan, style.inpBoxCon]}>
             <Text Style={style.title}>Plans</Text>
-            {planContainer("Average Plan", "USD $16")}
-            {planContainer("Premium Plan", "USD $36")}
+
+            {myProfile && myProfile.plans
+              ? myProfile.plans.map((plan, index) => {
+                  return <PlanBox data={plan} key={index} />;
+                })
+              : null}
           </View>
 
           {/* addMoreplans */}
@@ -145,33 +194,4 @@ const style = StyleSheet.create({
     justifyContent: "center",
     marginTop: 40,
   },
-  planContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "red",
-    marginTop: 10,
-    width: 292,
-    borderRadius: 13,
-    paddingHorizontal: 20,
-    paddingVertical: 6,
-    textAlign: "center",
-    backgroundColor: "#E0E0E0",
-  },
-  planTitle: {
-    color: "#6A6A6A",
-  },
-  price: {
-    color: "#6A6A6A",
-  },
 });
-
-const planContainer = (title, price) => {
-  return (
-    <Pressable onPress={editPlan}>
-      <View style={style.planContainer}>
-        <Text style={style.planTitle}>{title}</Text>
-        <Text style={style.price}>{price}</Text>
-      </View>
-    </Pressable>
-  );
-};

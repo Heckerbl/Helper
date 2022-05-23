@@ -14,25 +14,17 @@ export default function InputBox({
   const { myProfileData } = useContext(ContextStore);
   const [myProfile, setMyProfile] = myProfileData;
 
-  // local state for the input
-  const [input, setInput] = useState("");
-
-  useEffect(() => {
-    onload();
-  }, []);
-
-  // default loading the data with the previous data from the user inshort loading the previously entered data
-  // when the component loads
-  let runCount = 0;
-
-  const onload = () => {
-    if (data) setInput(data[stateName]);
-  };
-
   // handling the state change on type in the input feild.
   const changeState = (text) => {
-    setInput(text);
-    let newState = myProfile;
+    let newState;
+
+    if (myProfile) {
+      newState = myProfile;
+    } else {
+      newState = {
+        plans: [],
+      };
+    }
 
     // checking if the state is a plan input or not
     if (plan) {
@@ -44,25 +36,30 @@ export default function InputBox({
       // or else i can set a new one
 
       const id = data.id;
-
-      const exists = newState.plans.find((element) => element.id == id);
+      let exists;
+      if (newState.plans) {
+        exists = newState.plans.find((element) => element.id == id);
+      } else {
+        exists = false;
+        newState.plans = [];
+      }
 
       if (!exists) {
         // make a new object and append it;
         const newObj = {
           id: id,
-          [stateName]: input,
+          [stateName]: text,
         };
         // setting the newState to its value
         newState.plans.push(newObj);
       } else {
         // what if it already exists
         newState.plans.forEach((element, index) => {
-          if (element.id == id) newState.plans[index][stateName] = input;
+          if (element.id == id) newState.plans[index][stateName] = text;
         });
       }
     } else {
-      newState[stateName] = input;
+      newState[stateName] = text;
     }
     setMyProfile(newState);
   };
@@ -85,8 +82,8 @@ export default function InputBox({
       style={style.txtInp}
       placeholder={name}
       multiline={lines !== 1}
-      onChangeText={(text) => changeState(text)}
-      value={input}
+      onChangeText={changeState}
+      defaultValue={data ? data[stateName] : ""}
     />
   );
 }

@@ -1,43 +1,75 @@
-import { View, Text } from "react-native";
 import { createContext, useState, useEffect } from "react";
 
 // importing the firebase app
-import { firebaseConfig } from "../config/config";
-import firebase from "firebase/compat/app";
+import { firebaseApp } from "../config/config";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { logout } from "../../firebase/Logout";
+import { dbReference } from "../../firebase/firebase";
+import { query, where, onSnapshot, collection } from "firebase/firestore";
+import "firebase/compat/firestore";
+import "firebase/auth";
 
 // creating the context
 export const ContextStore = createContext();
-
-// initializing the firebase app
-export const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 export default function Context({ children }) {
   // user login state
   const [loggedInUser, setUser] = useState("NOTLOGGEDIN");
 
+  // setting the profiles ie helpers
+  const [helper, setHelper] = useState([]);
+
+  // pre fetching all the profiles in the database
+
+  useEffect(() => {
+    const q = firebaseApp.firestore().collection("profiles/");
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.docs.length > 0) {
+        snapshot.docs.forEach((doc) => {
+          let helperArray = helper;
+          let helperObj = doc.data();
+          helperObj.key = doc.id;
+          helperArray.push(helperObj);
+
+          setHelper(helperArray);
+        });
+      }
+      console.log({ helper });
+    });
+  }, []);
+
   // plan popup show state
   const [showSetPlan, setShowSetPlan] = useState(false);
 
   // state that contains the my profile
+  const [myProfile, setMyProfile] = useState();
 
-  const [myProfile, setMyProfile] = useState({
-    displayName: "",
-    quote: "",
-    jobTitle: "",
-    plans: [
-      {
-        id: "",
-        name: "",
-        price: "",
-        description: "",
-        workingTime: "",
-        response: "",
-      },
-    ],
+  // state to check if the user profile is new or not
+  const [isNew, setIsNew] = useState(true);
+
+  // state for handaling search and it's output
+  const [searchData, setSearchData] = useState({
+    searchTerm: null,
+    searchOutput: "noSearch",
   });
+
+  // reference data
+  //   {
+  //   id: "",
+  //   displayName: "",
+  //   quote: "",
+  //   jobTitle: "",
+  //   plans: [
+  //     // {
+  //     //   id: "",
+  //     //   name: "",
+  //     //   price: "",
+  //     //   description: "",
+  //     //   workingTime: "",
+  //     //   response: "",
+  //     // },
+  //   ],
+  // }
 
   // setting the firebase auth
   const auth = getAuth(firebaseApp);
@@ -48,13 +80,15 @@ export default function Context({ children }) {
       setUser("NOTLOGGEDIN");
     }
   });
-
   return (
     <ContextStore.Provider
       value={{
         usr: [loggedInUser, setUser],
         showPlan: [showSetPlan, setShowSetPlan],
         myProfileData: [myProfile, setMyProfile],
+        createNew: [isNew, setIsNew],
+        search: [searchData, setSearchData],
+        helperData: [helper, setHelper],
       }}
     >
       {children}
