@@ -1,17 +1,19 @@
-import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import React, { useContext, useState } from "react";
 import Search from "../../assets/search_btn.svg";
 import { ContextStore } from "../../context/Context";
 import { useNavigation } from "@react-navigation/native";
 
-// firebase imports
-import { dbReference } from "../../../firebase/firebase";
-import { query, where, onSnapshot, collection } from "firebase/firestore";
-import "firebase/compat/firestore";
-
 export default function SearchBox() {
   // importing the global state
-  const { search } = useContext(ContextStore);
+  const { search, helperData } = useContext(ContextStore);
+  const [helper] = helperData;
   const [searchData, setSearchData] = search;
 
   // navigation
@@ -25,8 +27,65 @@ export default function SearchBox() {
     setSearchData(newState);
   };
 
+  // this will return a search result output array for the given terms
+  const SearchHelper = (searchTerm) => {
+    const searchArray = formatSearch(searchTerm);
+
+    const searchedHelper = [];
+    console.log(helper);
+
+    helper.filter((item) => {
+      searchArray.forEach((search) => {
+        if (item) {
+          // checks for the matching name
+          if (item.displayName)
+            item.displayName.toLowerCase().includes(search) &&
+              searchedHelper.push(item);
+
+          // checks for the matching quote
+          if (item.quote)
+            item.quote.toLowerCase().includes(search) &&
+              searchedHelper.push(item);
+
+          // checks for the matching jobTitle
+          if (item.jobTitle)
+            item.jobTitle.toLowerCase().includes(search) &&
+              searchedHelper.push(item);
+        }
+      });
+    });
+
+    // set is easier to use when you need to make the data unique
+    const uniqueSearchResult = new Set(searchedHelper);
+    const outputArray = [];
+    uniqueSearchResult.forEach((item) => {
+      outputArray.push(item);
+    });
+    return outputArray;
+  };
+
+  const formatSearch = (term) => {
+    // objective
+    // the searchterm shoud be converted to lowercase and then splited from the spaces to find the different words
+
+    // changing to lower case
+    const properCase = term.toLowerCase();
+
+    // spliting the search term by spaces
+    const splitedSearch = properCase.split(" ");
+
+    // returning the splited search array
+    return splitedSearch;
+  };
+
   const submitData = () => {
     // fetching the data and setting in the global state
+    // getting the previous state to the new state
+    const newState = searchData;
+    // setting the output by js filtering data to lowercase split and compare
+    newState.searchOutput = SearchHelper(newState.searchTerm);
+    // finnally settin the global state
+    setSearchData(newState);
 
     // navigating to the seach output screen
     navigator.navigate("SearchScreen");
@@ -39,9 +98,9 @@ export default function SearchBox() {
         style={style.inputBox}
         onChangeText={handleState}
       />
-      <TouchableOpacity style={[style.searchIcoCon]} onPress={submitData}>
+      <Pressable style={[style.searchIcoCon]} onPress={submitData}>
         <Search height={20} width={20} />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

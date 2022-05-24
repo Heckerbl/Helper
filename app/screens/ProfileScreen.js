@@ -43,8 +43,8 @@ import "firebase/auth";
 export default function ProfileScreen({ route }) {
   // checking if the user is logged in or not
   const { id, mine } = route.params;
-
   const navigator = useNavigation();
+  console.log(route.params);
 
   const { usr, myProfileData, createNew } = useContext(ContextStore);
   const [loggedInUser, setUser] = usr;
@@ -53,13 +53,14 @@ export default function ProfileScreen({ route }) {
 
   // getting the profile data from the data base
   useEffect(() => {
-    if (loggedInUser != "NOTLOGGEDIN") {
+    if (id) {
       const q = query(
         collection(dbReference, "/profiles"),
         where("id", "==", id)
       );
       onSnapshot(q, (snapshot) => {
         if (snapshot.docs.length > 0) {
+          // profile is found of the logged in user
           setMyProfile(snapshot.docs[0].data());
 
           let doc = snapshot.docs[0].id;
@@ -67,15 +68,32 @@ export default function ProfileScreen({ route }) {
           let docedProfile = snapshot.docs[0].data();
           docedProfile.key = doc;
 
-          setMyProfile(docedProfile);
+          setMyProfile({ ...docedProfile });
           setIsNew(false);
+        } else {
+          // it means the user is logged in but no profile is found
+          setMyProfile({
+            image: loggedInUser.photoURL,
+            displayName: loggedInUser.displayName,
+            // quote: "Pc is heart and the heart is heart i need to build it",
+          });
+          setIsNew(true);
         }
       });
-      console.log(myProfile);
-      // setMyProfile(getProfileInfo(loggedInUser.uid));
-      // console.log("\n\n\n The value of my profile is ");
+    } else {
+      setMyProfile({
+        image:
+          "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
+        displayName: "New user",
+        // quote: "Pc is heart and the heart is heart i need to build it",
+      });
+      setIsNew(true);
     }
-  }, []);
+    // setMyProfile(getProfileInfo(loggedInUser.uid));
+    // console.log("\n\n\n The value of my profile is ");
+    console.log("use effect is running");
+  }, [mine]);
+  // getting the profile data from the data base
 
   // fetching the profile informaiton from the firbase
 
@@ -86,24 +104,25 @@ export default function ProfileScreen({ route }) {
   let user;
   if (myProfile) {
     user = myProfile;
-  } else if (loggedInUser == "NOTLOGGEDIN") {
-    user = {
-      image:
-        "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
-      displayName: "New user",
-      // quote: "Pc is heart and the heart is heart i need to build it",
-    };
-  } else {
-    user = {
-      image: loggedInUser.photoURL,
-      displayName: loggedInUser.displayName,
-      // quote: "Pc is heart and the heart is heart i need to build it",
-    };
   }
 
-  let { displayName, image, quote } = user;
-  const active = 1;
-
+  // // if the user is not logged in but is mine
+  // else if (loggedInUser == "NOTLOGGEDIN" && mine) {
+  //   user = {
+  //     image:
+  //       "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
+  //     displayName: "New user",
+  //     // quote: "Pc is heart and the heart is heart i need to build it",
+  //   };
+  // } else if (loggedInUser && mine) {
+  //   user = {
+  //     image: loggedInUser.photoURL,
+  //     displayName: loggedInUser.displayName,
+  //     // quote: "Pc is heart and the heart is heart i need to build it",
+  //   };
+  // }
+  console.log(user);
+  let { displayName, image, quote } = user || {};
   // title, price, offer, time, response, tags;
   // just a reference data not the actual data
   const plans = myProfile && myProfile.plans;
@@ -149,16 +168,45 @@ export default function ProfileScreen({ route }) {
   // for adding as a friend
   const addfrn = () => {};
 
+  const changeActive = (userId) => {
+    if (!userId) return;
+    const q = query(
+      collection(dbReference, "/users"),
+      where("id", "==", userId)
+    );
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.docs.length > 0) {
+        //  update the active status
+        const updateData = snapshot.docs[0].data();
+        updateData.active = false;
+        // update the db
+        const dbReference = firebaseApp
+          .firestore()
+          .collection(`users/`)
+          .doc(snapshot.docs[0].id);
+        dbReference.set(updateData);
+      }
+    });
+  };
   const handleLogout = () => {
+    // the function that changes the active status of the user.
+    // changeActive(myProfile.id);
+
+    // the function that logouts in actual
     logout();
-    setMyProfile();
+    // the functions that resets the user profile
+    setMyProfile({
+      image:
+        "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
+      displayName: "New user",
+    });
     setUser("NOTLOGGEDIN");
   };
 
   return (
     <View style={[globalStyle.makeSafe, style.main_container]}>
       <Header
-        title={"Profile > " + mine ? "Me" : displayName}
+        title={mine ? "Profile > Me" : "Profile > " + displayName}
         ham={false}
         notification
       />
@@ -177,7 +225,7 @@ export default function ProfileScreen({ route }) {
               <Text style={style.name}>{displayName}</Text>
 
               {/* quote section  */}
-              {myProfile ? (
+              {myProfile && loggedInUser != "NOTLOGGEDIN" ? (
                 <View style={style.quote}>
                   <Quote style={style.svg_quote} />
                   <Text style={style.quote_text}>{quote}</Text>
@@ -186,7 +234,27 @@ export default function ProfileScreen({ route }) {
             </View>
           </View>
 
-          {notLoggedIn ? null : (
+          {notLoggedIn ? (
+            mine ? null : (
+              <>
+                <View style={[globalStyle.flexCenter, style.btn_con]}>
+                  <Pressable
+                    style={[globalStyle.button_with_icon, style.message]}
+                    onPress={message}
+                  >
+                    <Text style={globalStyle.lightText}>Message</Text>
+                    <MessengerIco />
+                  </Pressable>
+                  <Pressable
+                    style={[globalStyle.smallIconBox, style.AddFrn]}
+                    onPress={addfrn}
+                  >
+                    <AddFrn />
+                  </Pressable>
+                </View>
+              </>
+            )
+          ) : (
             <View style={[globalStyle.flexCenter, style.btn_con]}>
               {mine ? (
                 myProfile ? (
@@ -263,7 +331,7 @@ export default function ProfileScreen({ route }) {
             )
           ) : null}
 
-          {notLoggedIn ? null : myProfile ? (
+          {notLoggedIn && mine ? null : myProfile ? (
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}

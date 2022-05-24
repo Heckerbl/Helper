@@ -13,8 +13,9 @@ import { useNavigation } from "@react-navigation/native";
 import { ContextStore } from "../../context/Context";
 
 export default function Nav({ active }) {
-  const { usr } = useContext(ContextStore);
+  const { usr, myProfileData } = useContext(ContextStore);
   const [loggedInUser] = usr;
+  const [, setMyProfile] = myProfileData;
   const navigation = useNavigation();
   return (
     <View style={style.mainContainer}>

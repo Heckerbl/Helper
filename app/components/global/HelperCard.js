@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import Star from "../../assets/Star.svg";
 import Quote from "../../assets/Quote.svg";
 import { getRandomColor } from "../../styles/GlobalStyles.js";
@@ -11,33 +11,38 @@ export default function HelperCard({ user }) {
   const handleCardClick = () => {
     navigator.navigate("ProfileScreen", {
       id: id,
+      mine: false,
     });
   };
 
   return (
-    <View style={style.main_container}>
-      <View style={style.title_container}>
-        <View style={style.image_container}>
-          <View style={style.circle}></View>
-          <Image source={{ uri: image }} style={style.img} />
+    <>
+      <Pressable onPress={handleCardClick}>
+        <View style={style.main_container}>
+          <View style={style.title_container}>
+            <View style={style.image_container}>
+              <View style={style.circle}></View>
+              <Image source={{ uri: image }} style={style.img} />
+            </View>
+            <View style={style.nm_jb}>
+              <Text style={style.name}>{displayName}</Text>
+              <Text style={style.job}>{jobTitle}</Text>
+            </View>
+          </View>
+          <View style={style.stars}>
+            {Array(stars)
+              .fill("*")
+              .map((e, i) => {
+                return <Star style={style.star} key={i} />;
+              })}
+          </View>
+          <View style={style.quote}>
+            <Quote style={style.svg_quote} />
+            <Text style={style.quote_text}>{quote}</Text>
+          </View>
         </View>
-        <View style={style.nm_jb}>
-          <Text style={style.name}>{displayName}</Text>
-          <Text style={style.job}>{jobTitle}</Text>
-        </View>
-      </View>
-      <View style={style.stars}>
-        {Array(stars)
-          .fill("*")
-          .map((e, i) => {
-            return <Star style={style.star} key={i} />;
-          })}
-      </View>
-      <View style={style.quote}>
-        <Quote style={style.svg_quote} />
-        <Text style={style.quote_text}>{quote}</Text>
-      </View>
-    </View>
+      </Pressable>
+    </>
   );
 }
 const style = StyleSheet.create({
@@ -66,6 +71,7 @@ const style = StyleSheet.create({
     fontSize: 20,
     lineHeight: 27,
     color: "#424242",
+    textTransform: "capitalize",
   },
   job: {
     // marginTop: 20,
@@ -73,18 +79,24 @@ const style = StyleSheet.create({
     fontSize: 16,
   },
   circle: {
-    height: 113,
-    width: 113,
     backgroundColor: getRandomColor(),
     borderRadius: 113,
+    height: "100%",
+    width: "100%",
+    position: "absolute",
   },
   image_container: {
     position: "relative",
+    height: 113,
+    width: 113,
+    justifyContent: "center",
+    alignItems: "center",
   },
   quote: {
     marginTop: 40,
     flexDirection: "row",
     width: 330,
+    marginLeft: 20,
   },
   quote_text: {
     fontWeight: "bold",
@@ -104,8 +116,9 @@ const style = StyleSheet.create({
     marginLeft: 10,
   },
   img: {
-    height: 110,
-    width: 110,
+    height: 108,
+    width: 108,
     borderRadius: 55,
+    position: "absolute",
   },
 });

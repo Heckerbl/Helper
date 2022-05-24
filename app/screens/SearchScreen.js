@@ -18,42 +18,21 @@ export default function SearchScreen({ route }) {
 
   const searchOutput = searchData.searchOutput;
 
+  const helper = searchData.searchOutput;
   // user will contain the possible matched results of the searched keyword.
-  const users = [
-    {
-      image: require("../assets/ref.png"),
-      name: "Linus tech tips",
-      job: "professional pc builder",
-      stars: 4,
-      quote: "Pc is heart and the heart is heart i need to build it",
-    },
-    {
-      image: require("../assets/ref.png"),
-      name: "Linus tech tips",
-      job: "professional pc builder",
-      stars: 4,
-      quote: "Pc is heart and the heart is heart i need to build it",
-    },
-    {
-      image: require("../assets/ref.png"),
-      name: "Linus tech tips",
-      job: "professional pc builder",
-      stars: 4,
-      quote: "Pc is heart and the heart is heart i need to build it",
-    },
-  ];
+
   return (
     <View style={globalStyle.makeSafe}>
       <Header title={SearchTitle} ham={false} notification={true} />
 
       {searchOutput == "noSearch" ? (
         <NoSearch />
-      ) : searchOutput == null ? (
+      ) : searchOutput.length == 0 ? (
         <NoResult />
       ) : (
         <ScrollView>
           <View style={[globalStyle.flexCenter, style.helper_container]}>
-            {users.map((user, index) => {
+            {helper.map((user, index) => {
               return <HelperCard user={user} key={index} />;
             })}
           </View>

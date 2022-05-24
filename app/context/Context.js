@@ -20,7 +20,6 @@ export default function Context({ children }) {
   const [helper, setHelper] = useState([]);
 
   // pre fetching all the profiles in the database
-
   useEffect(() => {
     const q = firebaseApp.firestore().collection("profiles/");
     onSnapshot(q, (snapshot) => {
@@ -30,11 +29,24 @@ export default function Context({ children }) {
           let helperObj = doc.data();
           helperObj.key = doc.id;
           helperArray.push(helperObj);
+          // let newArray = [];
+          // this gives an error but why i don't know
+          // let helperSet = new Set(helperObj);
+          // console.log({ helperSet });
+          // helperSet.forEach((elem) => newArray.push(elem));
 
-          setHelper(helperArray);
+          setHelper([...helperArray]);
+
+          const newSet = new Set(helper);
+          const newArray = [];
+
+          newSet.forEach((elem) => {
+            newArray.push(elem);
+          });
+
+          setHelper(newArray);
         });
       }
-      console.log({ helper });
     });
   }, []);
 

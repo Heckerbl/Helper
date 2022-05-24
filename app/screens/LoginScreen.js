@@ -3,6 +3,10 @@ import LoginButton from "../components/login/LoginButton";
 import { ContextStore } from "../context/Context";
 import { useContext } from "react";
 import firebase from "firebase/compat/app";
+// things that are needed for firebase
+import { dbReference } from "../../firebase/firebase";
+import { query, where, onSnapshot, collection } from "firebase/firestore";
+import "firebase/compat/firestore";
 
 import "firebase/compat/auth";
 
@@ -12,9 +16,11 @@ import { useNavigation } from "@react-navigation/native";
 export default function LoginScreen() {
   const navigator = useNavigation();
 
-  const { usr } = useContext(ContextStore);
+  const { usr, myProfileData, createNew } = useContext(ContextStore);
 
   const [user, setUser] = usr;
+  const [myProfile, setMyProfile] = myProfileData;
+  const [, setIsNew] = createNew;
   const androidClientId =
     "1022044952512-e6ftm4hklnncd5k59iu819qiu2u3lf0m.apps.googleusercontent.com";
   const handleFacebook = () => {};
@@ -41,9 +47,89 @@ export default function LoginScreen() {
             navigator.goBack();
 
             // setting user
-            setUser(result.user);
+            setUser({ ...result.user });
 
-            // setting the user profile
+            // storing the user in the firebase users collection.
+            const id = result.user.id;
+
+            // check for the profile
+
+            if (id) {
+              const q = query(
+                collection(dbReference, "/profiles"),
+                where("id", "==", id)
+              );
+              onSnapshot(q, (snapshot) => {
+                if (snapshot.docs.length > 0) {
+                  // profile is found of the logged in user
+                  setMyProfile(snapshot.docs[0].data());
+
+                  let doc = snapshot.docs[0].id;
+                  // it means that the profile that contains the doc url too in short docedprofile
+                  let docedProfile = snapshot.docs[0].data();
+                  docedProfile.key = doc;
+
+                  setMyProfile({ ...docedProfile });
+                  setIsNew(false);
+                } else {
+                  // it means the user is logged in but no profile is found
+                  setMyProfile({
+                    image: loggedInUser.photoURL,
+                    displayName: loggedInUser.displayName,
+                    // quote: "Pc is heart and the heart is heart i need to build it",
+                  });
+                  setIsNew(true);
+                }
+              });
+            } else {
+              setMyProfile({
+                image:
+                  "https://icons.veryicon.com/png/o/business/multi-color-financial-and-business-icons/user-139.png",
+                displayName: "New user",
+                // quote: "Pc is heart and the heart is heart i need to build it",
+              });
+              setIsNew(true);
+            }
+
+            // checking if the user data already exists in the db or not
+            // const q = query(
+            //   collection(dbReference, "/users"),
+            //   where("id", "==", id)
+            // );
+            // onSnapshot(q, (snapshot) => {
+            //   if (snapshot.docs.length > 0) {
+            //     //  update the active status
+            //     console.log({ "updating the user": snapshot.docs[0] });
+            //     const updateData = snapshot.docs[0].data();
+
+            //     updateData.active = true;
+
+            //     const dbReference = firebaseApp
+            //       .firestore()
+            //       .collection(`users/`)
+            //       .doc(snapshot.docs[0].id);
+            //     dbReference.set(updateData);
+            //   } else {
+            //     // set the new user and set the active status to true
+            //     // creating the user object
+            //     const userObj = {
+            //       id: result.user.id,
+            //       name: result.user.name,
+            //       photo: result.user.photoUrl,
+            //       active: true,
+            //       chats: [],
+            //     };
+
+            //     console.log({ "adding the user": snapshot.docs[0].id });
+
+            //     // sending to the firebase
+            //     firebaseApp
+            //       .firestore()
+            //       .collection(`users/`)
+            //       .add(userObj)
+            //       .catch((err) => console.log(err));
+            //   }
+            // });
           });
       }
     } catch ({ message }) {

@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React, { useContext } from "react";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import React, { useContext, useEffect } from "react";
 import Header from "../components/global/Header";
 import HelperCard from "../components/global/HelperCard";
 import Nav from "../components/global/Nav.js";
@@ -10,15 +10,8 @@ import { ContextStore } from "../context/Context";
 export default function HomeScreen({ navigation, route }) {
   const { helperData } = useContext(ContextStore);
   const [helper, setHelper] = helperData;
-  const user = helper;
-  // const user = {
-  //   image: require("../assets/ref.png"),
-  //   name: "Linus tech tips",
-  //   job: "professional pc builder",
-  //   stars: 4,
-  //   quote: "Pc is heart and the heart is heart i need to build it",
-  // };
-  const stars = 4;
+
+  // const helper = [];
 
   return (
     <View
@@ -33,16 +26,26 @@ export default function HomeScreen({ navigation, route }) {
       <ScrollView>
         <SearchBox style={style.searchCon} />
 
-        <View style={style.helper_container}>
-          <Text style={style.title}>New Helper</Text>
-          {user.map((usr, i) => {
-            return <HelperCard user={usr} key={i} />;
-          })}
-          <Text style={style.title}>Popular Helper</Text>
-          {user.map((usr, i) => {
-            return <HelperCard user={usr} key={i} />;
-          })}
-        </View>
+        {helper.length > 0 ? (
+          <View style={style.helper_container}>
+            <Text style={style.title}>New Helper</Text>
+            {helper.map((usr, i) => {
+              return <HelperCard user={usr} key={i} />;
+            })}
+            <Text style={style.title}>Popular Helper</Text>
+            {helper.map((usr, i) => {
+              return <HelperCard user={usr} key={i} />;
+            })}
+          </View>
+        ) : (
+          <View style={style.noHelper}>
+            <Image
+              source={require("../assets/noHelper.webp")}
+              style={style.img}
+            />
+            <Text style={style.text}> !OOPS , No helper found </Text>
+          </View>
+        )}
       </ScrollView>
       <Nav active={route.name} navigation={navigation} />
     </View>
@@ -62,5 +65,23 @@ const style = StyleSheet.create({
   },
   main_container: {
     backgroundColor: "#fff",
+  },
+
+  img: { width: 300, height: 200 },
+
+  text: {
+    fontSize: 18,
+    lineHeight: 25,
+    color: "#333",
+    marginTop: 20,
+    maxWidth: 300,
+    textAlign: "center",
+  },
+  noHelper: {
+    height: 500,
+    // width: "100%",
+    maxWidth: 350,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -38,19 +38,20 @@ export default function ProfileEditScreen() {
     // const id = loggedInUser.uid;
     // if the profile is new profile then it is fair that the new document must be created in the database
     if (isNew) {
-      const newProfile = { id: "", ...myProfile };
+      console.log("creating");
+      const newProfile = { key: "", id: "", image: "", ...myProfile };
       newProfile.id = loggedInUser.uid;
       newProfile.image = loggedInUser.photoURL;
       // sets the state
       setMyProfile(newProfile);
-      console.log(newProfile);
 
       // sets the data in the database firebase
-      setNewProfile(myProfile);
+      setNewProfile(newProfile);
 
       navigator.goBack();
       Alert.alert("Congrats", "Your profile has been setup successfully");
     } else {
+      console.log("updating");
       updateTheProfile(myProfile.key, myProfile);
       navigator.goBack();
       Alert.alert("Congrats", "Your profile has been updated successfully");

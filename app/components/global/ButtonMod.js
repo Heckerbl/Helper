@@ -12,6 +12,7 @@ export default function ButtonMod(prop) {
     backgroundColor,
     marginTop,
     marginLeft,
+    maxHeight,
     _FN,
   } = prop;
   const style = StyleSheet.create({
@@ -23,6 +24,7 @@ export default function ButtonMod(prop) {
       borderRadius: borderRad,
       marginTop: marginTop ? marginTop : "auto",
       marginLeft: marginLeft ? marginLeft : 0,
+      maxHeight: maxHeight ? maxHeight : height,
     },
     text: {
       color: color,

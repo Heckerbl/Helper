@@ -43,6 +43,7 @@ export default function Header({ title, notification, ham, chat, chatData }) {
       fontWeight: "400",
       fontSize: 18,
       lineHeight: 27,
+      textTransform: "capitalize",
     },
     titleContainer: {
       flexDirection: "row",
